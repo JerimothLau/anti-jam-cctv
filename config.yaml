@@ -1,0 +1,95 @@
+# =============================================================================
+# Anti-Jam CCTV Protection System — Configuration File
+# =============================================================================
+# Copyright (C) 2026 Avoceous (https://github.com/Avoceous)
+# Licensed under GNU General Public License v3.0 (GPL-3.0)
+# https://github.com/Avoceous/anti-jam-cctv
+#
+# Usage: sudo python3 main.py --config config.yaml
+# =============================================================================
+
+detection:
+  interface: wlan0                   # Your WiFi interface name
+  monitor_interface: wlan0mon        # Monitor mode interface (auto-created if auto_monitor_mode: true)
+  auto_monitor_mode: true            # Auto-enable monitor mode (requires root/sudo)
+  enable_packet_capture: true        # Enable 802.11 packet sniffing (requires scapy + root)
+
+  target_ssid: "YourCameraSSID"      # Protect this SSID specifically (null = protect all)
+  target_bssid: null                 # Protect this specific AP MAC address (null = all)
+
+  check_interval_sec: 2              # How often to run detection checks (seconds)
+  deauth_threshold: 10               # Deauth frames per interval = suspicious
+  deauth_burst_threshold: 30         # Deauth frames per interval = confirmed attack
+  rssi_drop_threshold_db: 20         # Signal drop in dBm triggering RF jam alert
+  rssi_window_sec: 10                # RSSI history window for drop analysis
+  beacon_missing_sec: 8              # AP beacon gone for Ns = likely jammed
+  beacon_spoof_threshold: 5          # Same SSID seen from 5+ BSSIDs = spoof flood
+  conn_failure_threshold: 3          # Consecutive disconnects before failover
+
+failover:
+  wifi_interface: wlan0              # Primary WiFi interface
+  lte_interface: wwan0               # 4G/LTE modem interface (or ppp0, usb0)
+  lte_apn: internet                  # Carrier APN string
+  local_recording_path: /media/sd/cctv_emergency/  # Emergency recording path
+  pre_jam_buffer_sec: 30             # Keep last 30s as pre-jam evidence
+  recovery_check_interval: 30        # Check for WiFi recovery every N seconds
+  auto_recover_wifi: true            # Auto-switch back to WiFi when it recovers
+  enable_lte_failover: true          # Enable 4G/LTE failover
+  enable_local_failover: true        # Enable local SD recording fallback
+  ffmpeg_path: ffmpeg                # Path to ffmpeg binary
+  ffmpeg_segment_duration: 60        # Video segment length in seconds
+
+cameras:
+  - name: "Front Door"
+    url: "rtsp://192.168.1.100:554/stream1"
+    username: "admin"
+    password: "your_password_here"
+
+  - name: "Back Gate"
+    url: "rtsp://192.168.1.101:554/stream1"
+    username: "admin"
+    password: "your_password_here"
+
+  - name: "Parking"
+    url: "rtsp://192.168.1.102:554/stream1"
+    username: ""
+    password: ""
+
+alerts:
+  rate_limit_sec: 30                 # Minimum seconds between same-type alerts
+
+  telegram:
+    enabled: false
+    bot_token: "YOUR_BOT_TOKEN"      # From @BotFather on Telegram
+    chat_id: "YOUR_CHAT_ID"          # From @userinfobot on Telegram
+
+  email:
+    enabled: false
+    smtp_host: smtp.gmail.com
+    smtp_port: 587
+    username: "your@gmail.com"
+    password: "your_app_password"    # Use Gmail App Password, not account password
+    from: "your@gmail.com"
+    to:
+      - "recipient@example.com"
+
+  webhook:
+    enabled: false
+    url: ""                          # Slack / Discord / Teams / custom webhook URL
+
+  mqtt:
+    enabled: false
+    broker: localhost
+    port: 1883
+    topic_prefix: "antijam/cctv"
+
+dashboard:
+  host: "0.0.0.0"                    # Listen on all interfaces
+  port: 8888                         # Access at http://<your-ip>:8888/
+
+# =============================================================================
+# End of file: config.yaml
+# Copyright (C) 2026 Avoceous (https://github.com/Avoceous)
+# Licensed under GNU General Public License v3.0 (GPL-3.0)
+# https://github.com/Avoceous/anti-jam-cctv
+# =============================================================================

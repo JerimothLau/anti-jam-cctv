@@ -1,0 +1,36 @@
+# =============================================================================
+# Anti-Jam CCTV Protection System — Python Dependencies
+# =============================================================================
+# Copyright (C) 2026 Avoceous (https://github.com/Avoceous)
+# Licensed under GNU General Public License v3.0 (GPL-3.0)
+# https://github.com/Avoceous/anti-jam-cctv
+# =============================================================================
+
+# Core dependencies
+scapy>=2.5.0         # 802.11 packet capture & deauth/beacon analysis
+aiohttp>=3.9.0       # Telegram & webhook async HTTP client
+pyyaml>=6.0          # YAML config file parsing
+flask>=3.0.0         # Real-time web dashboard
+
+# Optional but strongly recommended
+paho-mqtt>=1.6.1     # MQTT alerts (Home Assistant / SCADA integration)
+
+# =============================================================================
+# System tools required — install via OS package manager:
+#
+#   ffmpeg        — Video recording & RTSP stream probing
+#   iw            — WiFi interface management & link status
+#   wireless-tools— iwconfig for RSSI reading
+#   dhclient      — DHCP for LTE interface bring-up
+#   aircrack-ng   — Optional: airmon-ng for monitor mode setup
+#
+# Debian / Ubuntu / Raspberry Pi OS:
+#   sudo apt install ffmpeg iw wireless-tools dhclient aircrack-ng
+# =============================================================================
+
+# =============================================================================
+# End of file: requirements.txt
+# Copyright (C) 2026 Avoceous (https://github.com/Avoceous)
+# Licensed under GNU General Public License v3.0 (GPL-3.0)
+# https://github.com/Avoceous/anti-jam-cctv
+# =============================================================================
