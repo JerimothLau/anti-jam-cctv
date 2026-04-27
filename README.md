@@ -5,7 +5,6 @@
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 [![Python 3.9+](https://img.shields.io/badge/Python-3.9%2B-blue)](https://python.org)
 [![Platform: Linux](https://img.shields.io/badge/Platform-Linux-orange)](https://ubuntu.com)
-[![Author: Avoceous](https://img.shields.io/badge/Author-Avoceous-green)](https://github.com/Avoceous)
 
 ---
 
@@ -204,7 +203,7 @@ Please open an issue first to discuss major changes.
 
 **GNU General Public License v3.0 (GPL-3.0)**
 
-Copyright (C) 2026 Avoceous — https://github.com/Avoceous
+Copyright (C) 2026 w1boost1889M — https://github.com/w1boost1889M
 
 This is free software. You are free to use, modify, and distribute it under the same GPL-3.0 license. Any derivative works or commercial products built on this code **must also be released under GPL-3.0** and must preserve this copyright notice.
 
@@ -212,8 +211,8 @@ Full license text: https://www.gnu.org/licenses/gpl-3.0.txt
 
 ---
 
-*Built April 2026 by [Avoceous](https://github.com/Avoceous) | Inspired by real-world CCTV jamming incidents targeting security clients*
+*Built April 2026 by [w1boost1889M](https://github.com/w1boost1889M) | Inspired by real-world CCTV jamming incidents targeting security clients*
 
 ---
 
-<!-- Copyright (C) 2026 Avoceous (https://github.com/Avoceous) — GPL-3.0 -->
+<!-- Copyright (C) 2026 w1boost1889M (https://github.com/w1boost1889M) — GPL-3.0 -->
