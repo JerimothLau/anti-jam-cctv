@@ -8,7 +8,7 @@
 
 ---
 
-> **Copyright (C) 2026 Avoceous (https://github.com/Avoceous)**
+> **Copyright (C) 2026 w1boost1889M (https://github.com/w1boost1889M)**
 >
 > This program is free software: you can redistribute it and/or modify it under the terms of the
 > GNU General Public License as published by the Free Software Foundation, either version 3 of
@@ -95,7 +95,7 @@ anti-jam-cctv/
 
 ```bash
 # 1. Clone the repository
-git clone https://github.com/Avoceous/anti-jam-cctv.git
+git clone https://github.com/w1boost1889M/anti-jam-cctv.git
 cd anti-jam-cctv
 
 # 2. Install system dependencies
