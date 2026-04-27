@@ -1,7 +1,7 @@
 # =============================================================================
 # Anti-Jam CCTV Protection System
 # =============================================================================
-# Copyright (C) 2026 Avoceous (https://github.com/Avoceous)
+# Copyright (C) 2026 w1boost1889M (https://github.com/w1boost1889M)
 #
 # This file is part of Anti-Jam CCTV Protection System.
 #
@@ -19,8 +19,8 @@
 # this program. If not, see <https://www.gnu.org/licenses/>.
 #
 # Author   : Avoceous
-# GitHub   : https://github.com/Avoceous
-# Project  : https://github.com/Avoceous/anti-jam-cctv
+# GitHub   : https://github.com/w1boost1889M
+# Project  : https://github.com/w1boost1889M/anti-jam-cctv
 # License  : GNU General Public License v3.0 (GPL-3.0)
 # Created  : April 2026
 # File     : core/stream_monitor.py
@@ -317,7 +317,7 @@ class StreamMonitor:
 
 # =============================================================================
 # End of file: core/stream_monitor.py
-# Copyright (C) 2026 Avoceous (https://github.com/Avoceous)
+# Copyright (C) 2026 w1boost1889M (https://github.com/w1boost1889M)
 # Licensed under GNU General Public License v3.0 (GPL-3.0)
 # https://github.com/Avoceous/anti-jam-cctv
 # =============================================================================
