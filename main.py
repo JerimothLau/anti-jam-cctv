@@ -1,41 +1,6 @@
 # =============================================================================
 # Anti-Jam CCTV Protection System
 # =============================================================================
-# Copyright (C) 2026 w1boost1889M (https://github.com/w1boost1889M)
-#
-# This file is part of Anti-Jam CCTV Protection System.
-#
-# Anti-Jam CCTV Protection System is free software: you can redistribute it
-# and/or modify it under the terms of the GNU General Public License as
-# published by the Free Software Foundation, either version 3 of the License,
-# or (at your option) any later version.
-#
-# Anti-Jam CCTV Protection System is distributed in the hope that it will be
-# useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General
-# Public License for more details.
-#
-# You should have received a copy of the GNU General Public License along with
-# this program. If not, see <https://www.gnu.org/licenses/>.
-#
-# Author   : Avoceous
-# GitHub   : https://github.com/Avoceous
-# Project  : https://github.com/Avoceous/anti-jam-cctv
-# License  : GNU General Public License v3.0 (GPL-3.0)
-# Created  : April 2026
-# File     : main.py
-# =============================================================================
-"""
-Anti-Jam CCTV Protection System — Entry Point
-==============================================
-Real-time multi-vector WiFi jamming detection and automatic failover
-for CCTV/IP camera systems. Detects deauth floods, RF jamming, beacon
-spoofing, and RSSI drops — then auto-switches to 4G/LTE or local SD.
-
-Usage:
-    sudo python3 main.py --config config.yaml
-    sudo python3 main.py --interface wlan0 --cameras rtsp://192.168.1.100/stream1
-"""
 
 import asyncio
 import argparse
@@ -59,42 +24,76 @@ logging.basicConfig(
         logging.FileHandler('antijam.log')
     ]
 )
+
 log = logging.getLogger("AntiJamCCTV")
 
 
 def load_config(path: str) -> dict:
     with open(path, 'r') as f:
-        return yaml.safe_load(f)
-
-
-async def main(config: dict):
-    log.info("🛡️  Anti-Jam CCTV System starting...")
-
-    alert_engine   = AlertEngine(config.get('alerts', {}))
-    failover_mgr   = FailoverManager(config.get('failover', {}), alert_engine)
-    jam_detector   = JamDetector(config.get('detection', {}), failover_mgr, alert_engine)
-    stream_monitor = StreamMonitor(config.get('cameras', []), failover_mgr, alert_engine)
-    dashboard      = DashboardServer(config.get('dashboard', {}), jam_detector, stream_monitor, failover_mgr)
-
-    loop = asyncio.get_running_loop()
-    for sig in (signal.SIGINT, signal.SIGTERM):
-        loop.add_signal_handler(sig, lambda: asyncio.create_task(shutdown(
-            jam_detector, stream_monitor, dashboard)))
-
-    await asyncio.gather(
-        jam_detector.run(),
-        stream_monitor.run(),
-        dashboard.run(),
-        return_exceptions=True
-    )
+        return yaml.safe_load(f) or {}
 
 
 async def shutdown(*components):
-    log.info("Shutting down Anti-Jam CCTV System...")
+    log.info("🛑 Shutting down Anti-Jam CCTV System...")
+
     for c in components:
-        if hasattr(c, 'stop'):
-            await c.stop()
-    asyncio.get_event_loop().stop()
+        if hasattr(c, "stop"):
+            try:
+                await c.stop()
+            except Exception as e:
+                log.warning(f"Failed stopping {c.__class__.__name__}: {e}")
+
+
+async def main(config: dict):
+    log.info("🛡️ Anti-Jam CCTV System starting...")
+
+    alert_engine = AlertEngine(config.get('alerts', {}))
+    failover_mgr = FailoverManager(config.get('failover', {}), alert_engine)
+    jam_detector = JamDetector(config.get('detection', {}), failover_mgr, alert_engine)
+    stream_monitor = StreamMonitor(config.get('cameras', []), failover_mgr, alert_engine)
+    dashboard = DashboardServer(config.get('dashboard', {}), jam_detector, stream_monitor, failover_mgr)
+
+    # -----------------------------
+    # Graceful shutdown handling
+    # -----------------------------
+    stop_event = asyncio.Event()
+
+    def _signal_handler():
+        log.info("⚡ Shutdown signal received")
+        stop_event.set()
+
+    loop = asyncio.get_running_loop()
+    for sig in (signal.SIGINT, signal.SIGTERM):
+        loop.add_signal_handler(sig, _signal_handler)
+
+    # -----------------------------
+    # Start system tasks
+    # -----------------------------
+    tasks = [
+        asyncio.create_task(jam_detector.run()),
+        asyncio.create_task(stream_monitor.run()),
+        asyncio.create_task(dashboard.run()),
+        asyncio.create_task(stop_event.wait())
+    ]
+
+    done, pending = await asyncio.wait(
+        tasks,
+        return_when=asyncio.FIRST_COMPLETED
+    )
+
+    # -----------------------------
+    # Cleanup phase
+    # -----------------------------
+    log.info("Stopping running tasks...")
+
+    for task in pending:
+        task.cancel()
+
+    await asyncio.gather(*pending, return_exceptions=True)
+
+    await shutdown(jam_detector, stream_monitor, dashboard)
+
+    log.info("✅ Shutdown complete")
 
 
 if __name__ == '__main__':
@@ -102,28 +101,29 @@ if __name__ == '__main__':
     parser.add_argument('--config', default='config.yaml', help='Path to config file')
     parser.add_argument('--interface', help='WiFi monitor interface (e.g. wlan0)')
     parser.add_argument('--cameras', nargs='+', help='RTSP camera URLs')
+
     args = parser.parse_args()
 
     config_path = Path(args.config)
+
     if config_path.exists():
         config = load_config(str(config_path))
     else:
-        log.warning(f"Config not found at {args.config}, using defaults")
+        log.warning("Config not found, using defaults")
         config = {}
 
+    # override CLI interface
     if args.interface:
         config.setdefault('detection', {})['interface'] = args.interface
+
+    # normalize camera input
     if args.cameras:
-        config['cameras'] = [{'url': u, 'name': f'Camera_{i}'} for i, u in enumerate(args.cameras)]
+        config['cameras'] = [
+            {'url': url, 'name': f'Camera_{i}'}
+            for i, url in enumerate(args.cameras)
+        ]
 
     try:
         asyncio.run(main(config))
     except KeyboardInterrupt:
-        log.info("Stopped by user.")
-
-# =============================================================================
-# End of file: main.py
-# Copyright (C) 2026 w1boost1889M (https://github.com/w1boost1889M)
-# Licensed under GNU General Public License v3.0 (GPL-3.0)
-# https://github.com/w1boost1889M/anti-jam-cctv
-# =============================================================================
+        log.info("Stopped by user")
